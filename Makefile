@@ -38,3 +38,8 @@ log-server:
 
 log-worker:
 	docker-compose -f ./compose-prod-worker.yml logs -f
+
+
+stop-old:
+	docker-compose -f ./docker-compose.yml down
+	docker ps
