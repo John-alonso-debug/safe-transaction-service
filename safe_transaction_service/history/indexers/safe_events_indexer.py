@@ -34,7 +34,9 @@ class SafeEventsIndexerProvider:
         if hasattr(cls, 'instance'):
             del cls.instance
 
-
+#
+# todo x:
+#
 class SafeEventsIndexer(EventsIndexer):
     """
     Indexes Gnosis Safe L2 events

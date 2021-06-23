@@ -29,7 +29,9 @@ class Erc20EventsIndexerProvider:
         if hasattr(cls, 'instance'):
             del cls.instance
 
-
+#
+# todo x:
+#
 class Erc20EventsIndexer(EthereumIndexer):
     """
     Indexes ERC20 and ERC721 `Transfer` Event (as ERC721 has the same topic)

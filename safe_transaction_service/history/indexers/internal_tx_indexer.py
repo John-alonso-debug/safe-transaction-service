@@ -29,6 +29,9 @@ class InternalTxIndexerProvider:
                     block_process_limit=min(block_process_limit, 500)
                 )
             else:
+                #
+                # todo x:
+                #
                 cls.instance = InternalTxIndexer(
                     EthereumClient(settings.ETHEREUM_TRACING_NODE_URL),
                     block_process_limit=block_process_limit
@@ -40,7 +43,9 @@ class InternalTxIndexerProvider:
         if hasattr(cls, 'instance'):
             del cls.instance
 
-
+#
+# todo x: index
+#
 class InternalTxIndexer(EthereumIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

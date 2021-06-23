@@ -208,6 +208,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 # We are not interested in keeping results of tasks
 CELERY_IGNORE_RESULT = True
 
+
+#
+# todo x： add celery worker group here
+#   - https://www.cnblogs.com/ajianbeyourself/p/3889017.html
+#   - https://www.celerycn.io/yong-hu-zhi-nan/lu-you-ren-wu-routing-tasks
+#
+
 # Django REST Framework
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {

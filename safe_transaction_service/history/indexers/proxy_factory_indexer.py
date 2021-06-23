@@ -29,7 +29,9 @@ class ProxyFactoryIndexerProvider:
         if hasattr(cls, 'instance'):
             del cls.instance
 
-
+#
+# todo x:
+#
 class ProxyFactoryIndexer(EventsIndexer):
     IGNORE_ADDRESSES_ON_LOG_FILTER = False
 

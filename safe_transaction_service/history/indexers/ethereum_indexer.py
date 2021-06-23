@@ -16,7 +16,9 @@ from ..utils import chunks
 
 logger = getLogger(__name__)
 
-
+#
+# todo x:
+#
 class EthereumIndexer(ABC):
     """
     This service allows indexing of Ethereum blockchain.
@@ -28,7 +30,7 @@ class EthereumIndexer(ABC):
     """
     def __init__(self, ethereum_client: EthereumClient, confirmations: int = 1,
                  block_process_limit: int = 1000, updated_blocks_behind: int = 20,
-                 query_chunk_size: int = 100, first_block_threshold: int = 150000,
+                 query_chunk_size: int = 100, first_block_threshold: int = 8555555,
                  block_auto_process_limit: bool = True):
         """
         :param ethereum_client:
@@ -53,8 +55,14 @@ class EthereumIndexer(ABC):
         self.block_process_limit = block_process_limit
         self.updated_blocks_behind = updated_blocks_behind
         self.query_chunk_size = query_chunk_size
+        #
+        # todo x:
+        #
         self.first_block_threshold = first_block_threshold
         self.block_auto_process_limit = block_auto_process_limit
+
+        print('logX: index event args: first_block_threshold=', self.first_block_threshold)
+
 
     class FindRelevantElementsException(Exception):
         pass

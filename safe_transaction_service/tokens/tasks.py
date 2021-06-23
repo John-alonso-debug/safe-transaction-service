@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from celery import app
+from celery import task
 from celery.utils.log import get_task_logger
 from eth_typing import ChecksumAddress
 
@@ -35,7 +36,7 @@ class EthValueWithTimestamp(object):
     def __str__(self):
         return f'{self.eth_value}:{self.timestamp.timestamp()}'
 
-
+# todo task:
 @app.shared_task()
 def calculate_token_eth_price_task(token_address: ChecksumAddress, redis_key: str,
                                    force_recalculation: bool = False) -> Optional[EthValueWithTimestamp]:
@@ -81,6 +82,9 @@ def fix_pool_tokens_task() -> Optional[int]:
     """
     ethereum_client = EthereumClientProvider()
     ethereum_network = ethereum_client.get_network()
+
+
+    # todo：
     if ethereum_network == EthereumNetwork.MAINNET:
         try:
             number = Token.pool_tokens.fix_all_pool_tokens()

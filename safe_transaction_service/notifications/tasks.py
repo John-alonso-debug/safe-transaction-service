@@ -125,6 +125,7 @@ def send_notification_task(address: Optional[str], payload: Dict[str, Any]) -> T
         close_gevent_db_connection()
 
 
+# task group2:
 @app.shared_task()
 def send_notification_owner_task(address: str, safe_tx_hash: str):
     """

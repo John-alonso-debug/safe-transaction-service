@@ -4,11 +4,19 @@ import os
 from django.apps import AppConfig, apps
 from django.conf import settings
 
+from kombu import Queue, Exchange
 from celery import Celery
 from celery._state import get_current_task
 from celery.app.log import TaskFormatter
 from celery.signals import setup_logging
 from celery.utils.log import ColorFormatter
+
+# task list:
+from safe_transaction_service.tokens.tasks import *
+from safe_transaction_service.notifications.tasks import *
+from safe_transaction_service.history.tasks import *
+from safe_transaction_service.contracts.tasks import *
+
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +27,138 @@ if not settings.configured:
 
 
 app = Celery('safe_transaction_service')
+
+
+##################################################################################
+
+
+# default:
+app.conf.task_default_queue = 'default'
+app.conf.task_default_exchange_type = 'direct'
+app.conf.task_default_routing_key = 'default'
+app.conf.task_always_eager = False
+app.conf.timezone = "UTC"
+app.conf.enable_utc = True
+
+# celery queues
+app.conf.task_queues = {
+    Queue("default", Exchange("default"), routing_key="default"),
+    #
+    # tokens
+    #
+    Queue("tokens", Exchange("tokens"), routing_key="tokens.calculate_token_eth_price_task"),
+    Queue("tokens", Exchange("tokens"), routing_key="tokens.fix_pool_tokens_task"),
+    Queue("tokens", Exchange("tokens"), routing_key="tokens.get_token_info_from_blockchain"),
+    #
+    # notifications
+    #
+    Queue("notifications", Exchange("notifications"), routing_key="notifications.send_notification_task"),
+    Queue("notifications", Exchange("notifications"), routing_key="notifications.send_notification_owner_task"),
+    #
+    # history group:
+    #
+    Queue("history", Exchange("history"), routing_key="history.index_new_proxies_task"),
+    Queue("history", Exchange("history"), routing_key="history.index_internal_txs_task"),
+    Queue("history", Exchange("history"), routing_key="history.index_safe_events_task"),
+    Queue("history", Exchange("history"), routing_key="history.index_erc20_events_task"),
+    Queue("history", Exchange("history"), routing_key="history.process_decoded_internal_txs_task"),
+    Queue("history", Exchange("history"), routing_key="history.process_decoded_internal_txs_for_safe_task"),
+    Queue("history", Exchange("history"), routing_key="history.check_reorgs_task"),
+    Queue("history", Exchange("history"), routing_key="history.send_webhook_task"),
+    Queue("history", Exchange("history"), routing_key="history.index_contract_metadata"),
+
+    #
+    # contracts group:
+    #
+    Queue("contracts", Exchange("contracts"), routing_key="contracts.index_contracts_metadata_task"),
+    Queue("contracts", Exchange("contracts"), routing_key="contracts.xxx"),
+
+
+}
+
+
+# celery routes
+app.conf.task_routes = {
+    #
+    # tokens tasks: mapper taskFn with queue.
+    #
+    "safe_transaction_service.tokens.tasks.calculate_token_eth_price_task": {
+        "queue": "tokens",
+        "routing_key": "tokens.calculate_token_eth_price_task"
+    },
+    "safe_transaction_service.tokens.tasks.fix_pool_tokens_task": {
+        "queue": "tokens",
+        "routing_key": "tokens.fix_pool_tokens_task"
+    },
+    "safe_transaction_service.tokens.tasks.get_token_info_from_blockchain": {
+        "queue": "tokens",
+        "routing_key": "tokens.get_token_info_from_blockchain"
+    },
+
+    #
+    # notifications tasks:
+    #
+    "safe_transaction_service.notifications.tasks.send_notification_task": {
+        "queue": "notifications",
+        "routing_key": "notifications.send_notification_task"
+    },
+    "safe_transaction_service.notifications.tasks.send_notification_owner_task": {
+        "queue": "notifications",
+        "routing_key": "notifications.send_notification_owner_task"
+    },
+
+    #
+    # history
+    #
+    "safe_transaction_service.history.tasks.index_new_proxies_task": {
+        "queue": "history",
+        "routing_key": "history.index_new_proxies_task"
+    },
+
+    "safe_transaction_service.history.tasks.index_internal_txs_task": {
+        "queue": "history",
+        "routing_key": "history.index_internal_txs_task"
+    },
+    "safe_transaction_service.history.tasks.index_safe_events_task": {
+        "queue": "history",
+        "routing_key": "history.index_safe_events_task"
+    },
+    "safe_transaction_service.history.tasks.index_erc20_events_task": {
+        "queue": "history",
+        "routing_key": "history.index_erc20_events_task"
+    },
+    "safe_transaction_service.history.tasks.process_decoded_internal_txs_task": {
+        "queue": "history",
+        "routing_key": "history.process_decoded_internal_txs_task"
+    },
+    "safe_transaction_service.history.tasks.process_decoded_internal_txs_for_safe_task": {
+        "queue": "history",
+        "routing_key": "history.process_decoded_internal_txs_for_safe_task"
+    },
+    "safe_transaction_service.history.tasks.check_reorgs_task": {
+        "queue": "history",
+        "routing_key": "history.check_reorgs_task"
+    },
+    "safe_transaction_service.history.tasks.send_webhook_task": {
+        "queue": "history",
+        "routing_key": "history.send_webhook_task"
+    },
+    "safe_transaction_service.history.tasks.index_contract_metadata": {
+        "queue": "history",
+        "routing_key": "history.index_contract_metadata"
+    },
+
+    #
+    # contracts
+    #
+    "safe_transaction_service.contracts.tasks.index_contracts_metadata_task": {
+        "queue": "contracts",
+        "routing_key": "contracts.index_contracts_metadata_task"
+    },
+}
+
+
+##################################################################################
 
 
 class CeleryConfig(AppConfig):

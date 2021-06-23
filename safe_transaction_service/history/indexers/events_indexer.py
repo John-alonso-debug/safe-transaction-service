@@ -13,16 +13,20 @@ from .ethereum_indexer import EthereumIndexer
 
 logger = getLogger(__name__)
 
-
+#
+# todo x:  evt
+#
 class EventsIndexer(EthereumIndexer):
     """
     Indexes Ethereum events
     """
 
     IGNORE_ADDRESSES_ON_LOG_FILTER: Optional[bool] = None  # Don't use addresses to filter logs
-
     def __init__(self, *args, **kwargs):
-        kwargs['first_block_threshold'] = 0
+        #
+        # todo x:
+        #
+        kwargs['first_block_threshold'] = 8555555  #  todo x : index start adt
         super().__init__(*args, **kwargs)
 
     @property
