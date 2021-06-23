@@ -1,0 +1,61 @@
+version: '2.2' # extends only support in 2.x
+
+
+##########################################
+# service
+##########################################
+
+# TODO: worker 里需要禁用所有 API 路由
+
+services:
+
+  #################### celery worker ##############################
+
+  celeryworker_default:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO -Q default
+
+  celeryworker_rebate:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO -Q rebate
+
+  celeryworker_email:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO -Q email
+
+  celeryworker_sms:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO -Q sms
+
+  celeryworker_user_info:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO -Q user_info
+
+  celeryworker_daily_count:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A engine_proxy.celery_app worker -l INFO -Q daily_count
+
+  celeryworker_engine_default:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A engine_proxy.celery_app worker -l INFO -Q default

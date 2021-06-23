@@ -1,0 +1,27 @@
+version: '2.2' # extends only support in 2.x
+
+
+##########################################
+# service
+##########################################
+
+# TODO: worker 里需要禁用所有 API 路由
+
+services:
+
+  #################### celery beat ##############################
+
+  celerybeat_maneki:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp beat -l INFO
+
+  celerybeat_engine_proxy:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A engine_proxy.celery_app beat -l INFO
+

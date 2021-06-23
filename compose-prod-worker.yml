@@ -1,0 +1,110 @@
+version: '2.2' # extends only support in 2.x
+
+
+##########################################
+# service
+##########################################
+
+# TODO: worker 里需要禁用所有 API 路由
+
+services:
+
+  #################### celery worker ##############################
+
+  celeryworker:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp worker -l INFO
+
+
+  celerybeat:
+    # https://github.com/docker/compose/issues/3220
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    command: tini -- celery -A maneki.taskapp beat -l INFO
+
+
+  #################### MQ deposit worker ##############################
+  worker_crypto_deposit_address_loader:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.crypto_deposit_address_loader --traceback --script-args
+
+  worker_crypto_deposit_blockchain_proxy_task:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.crypto_deposit_blockchain_proxy_task --traceback --script-args
+
+
+  worker_crypto_deposit_engine_task:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.crypto_deposit_engine_task --traceback --script-args
+
+
+  #################### MQ withdraw worker ##############################
+  worker_crypto_withdraw_blockchain_proxy_task:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.crypto_withdraw_blockchain_proxy_task --traceback --script-args
+
+
+  worker_crypto_withdraw_engine_task:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.crypto_withdraw_engine_task --traceback --script-args
+
+
+  worker_fiat_withdraw_engine_task:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.fiat_withdraw_engine_task --traceback --script-args
+
+
+  #################### MQ engine account worker ##############################
+  worker_sync_engine_account:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.sync_engine_account --traceback --script-args
+
+
+  #################### user member ##############################
+  worker_user_member_creation:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.sync_user_member_infos --traceback --script-args
+
+
+  #################### user member points ##############################
+  worker_user_member_add_points:
+    extends:
+      file: compose-prod-base.yml
+      service: server
+    ports: []
+    command: tini -- python manage.py runscript -v3 scripts.add_user_member_points --traceback --script-args
+
+  worker_fiat_deposit_engine_task:
+      extends:
+        file: compose-prod-base.yml
+        service: server
+      ports: []
+      command: tini -- python manage.py runscript -v3 scripts.fiat_deposit_engine_task --traceback --script-args

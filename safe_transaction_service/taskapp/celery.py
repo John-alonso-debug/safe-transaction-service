@@ -225,3 +225,10 @@ class PatchedCeleryFormatter(ColorFormatter):
             record.__dict__.setdefault('task_name', '???')
             record.__dict__.setdefault('task_id', '???')
         return ColorFormatter.format(self, record)
+
+
+# for test:
+@app.task(bind=True)
+def debug_task(self):
+    print('Request: {!r}'.format(self.request))  # pragma: no cover
+
