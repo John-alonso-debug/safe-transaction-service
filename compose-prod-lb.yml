@@ -1,0 +1,23 @@
+version: '3.5'
+
+# 自定义数据卷:
+volumes:
+  nginx-shared:
+  postgres_data:
+
+
+######################################################
+
+
+services:
+  nginx:
+    image: nginx:alpine
+    hostname: nginx
+    container_name: nginx
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-shared:/nginx
+    depends_on:
+      - web

@@ -1,39 +1,29 @@
 version: '2.2' # extends only support in 2.x
 
+
+# 自定义数据卷:
+volumes:
+  nginx-shared:
+  postgres_data:
+
+
 services:
   #################### api service: base ##############################
-  # use base image:
-  server: &server
+
+  web: &web
+    container_name: web
     build:
-      context: ..
-      dockerfile: ./deploy/compose/production/django/Dockerfile
-    volumes:
-      - .:/app
+      context: .
+      dockerfile: docker/web/Dockerfile
     env_file:
-      - ../.env
-    environment:
-      - USE_DOCKER=yes
-    expose:
-      - 8000
+      - .env
+    depends_on:
+      - db
+      - redis
+    working_dir: /app
+    ports:
+      - "8888:8888"
+    volumes:
+      - nginx-shared:/nginx
+    command: docker/web/run_web.sh
 
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://172.31.45.240:12201"  # 172.31.45.240
-        labels: "api_auth"
-
-    command: >
-      tini -- gunicorn
-      --worker-class=gevent
-      --chdir=/app
-      config.wsgi
-      -w 1 -b :8000
-
-#    command: >
-#      tini -- uwsgi
-#      --chdir=/app
-#      --module=config.wsgi:application
-#      --socket=0.0.0.0:8000
-#      --processes=1
-#      --max-requests=5000
-#
