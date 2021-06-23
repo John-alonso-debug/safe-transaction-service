@@ -4,8 +4,6 @@ version: '2.2' # extends only support in 2.x
 # 自定义数据卷:
 volumes:
   nginx-shared:
-  postgres_data:
-
 
 services:
   #################### api service: base ##############################
