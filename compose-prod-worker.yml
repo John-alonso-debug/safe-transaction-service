@@ -38,11 +38,6 @@ services:
     container_name: celery_worker_default
     command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q default
 
-  celery_worker_history:
-    <<: *scheduler
-    container_name: celery_worker_history
-    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history
-
   celery_worker_contracts:
     <<: *scheduler
     container_name: celery_worker_contracts
@@ -57,3 +52,48 @@ services:
     <<: *scheduler
     container_name: celery_worker_tokens
     command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q tokens
+
+  ####################################################################################################
+
+  celery_worker_history_index_new_proxies_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_index_new_proxies_task
+
+  celery_worker_history_index_internal_txs_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_index_internal_txs_task
+
+  celery_worker_history_index_safe_events_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_index_safe_events_task
+
+  celery_worker_history_index_erc20_events_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_index_erc20_events_task
+
+  celery_worker_history_process_decoded_internal_txs_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_process_decoded_internal_txs_task
+
+  celery_worker_history_process_decoded_internal_txs_for_safe_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_process_decoded_internal_txs_for_safe_task
+
+  celery_worker_history_check_reorgs_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_check_reorgs_task
+
+  celery_worker_history_send_webhook_task:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_send_webhook_task
+
+  celery_worker_history_index_contract_metadata:
+    <<: *scheduler
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history_index_contract_metadata
+
+
+
+
+
+
+

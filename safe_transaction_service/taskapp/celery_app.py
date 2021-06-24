@@ -63,21 +63,20 @@ app.conf.task_queues = {
     #
     # history group:
     #
-    Queue("history", Exchange("history"), routing_key="history.index_new_proxies_task"),
-    Queue("history", Exchange("history"), routing_key="history.index_internal_txs_task"),
-    Queue("history", Exchange("history"), routing_key="history.index_safe_events_task"),
-    Queue("history", Exchange("history"), routing_key="history.index_erc20_events_task"),
-    Queue("history", Exchange("history"), routing_key="history.process_decoded_internal_txs_task"),
-    Queue("history", Exchange("history"), routing_key="history.process_decoded_internal_txs_for_safe_task"),
-    Queue("history", Exchange("history"), routing_key="history.check_reorgs_task"),
-    Queue("history", Exchange("history"), routing_key="history.send_webhook_task"),
-    Queue("history", Exchange("history"), routing_key="history.index_contract_metadata"),
+    Queue("history_index_new_proxies_task", Exchange("history_index_new_proxies_task"), routing_key="history_index_new_proxies_task"),
+    Queue("history_index_internal_txs_task", Exchange("history_index_internal_txs_task"), routing_key="history_index_internal_txs_task"),
+    Queue("history_index_safe_events_task", Exchange("history_index_safe_events_task"), routing_key="history_index_safe_events_task"),
+    Queue("history_index_erc20_events_task", Exchange("history_index_erc20_events_task"), routing_key="history_index_erc20_events_task"),
+    Queue("history_process_decoded_internal_txs_task", Exchange("history_process_decoded_internal_txs_task"), routing_key="history_process_decoded_internal_txs_task"),
+    Queue("history_process_decoded_internal_txs_for_safe_task", Exchange("history_process_decoded_internal_txs_for_safe_task"), routing_key="history_process_decoded_internal_txs_for_safe_task"),
+    Queue("history_check_reorgs_task", Exchange("history_check_reorgs_task"), routing_key="history_check_reorgs_task"),
+    Queue("history_send_webhook_task", Exchange("history_send_webhook_task"), routing_key="history_send_webhook_task"),
+    Queue("history_index_contract_metadata", Exchange("history_index_contract_metadata"), routing_key="history_index_contract_metadata"),
 
     #
     # contracts group:
     #
     Queue("contracts", Exchange("contracts"), routing_key="contracts.index_contracts_metadata_task"),
-    Queue("contracts", Exchange("contracts"), routing_key="contracts.xxx"),
 
 
 }
@@ -117,41 +116,41 @@ app.conf.task_routes = {
     # history
     #
     "safe_transaction_service.history.tasks.index_new_proxies_task": {
-        "queue": "history",
-        "routing_key": "history.index_new_proxies_task"
+        "queue": "history_index_new_proxies_task",
+        "routing_key": "history_index_new_proxies_task"
     },
 
     "safe_transaction_service.history.tasks.index_internal_txs_task": {
-        "queue": "history",
-        "routing_key": "history.index_internal_txs_task"
+        "queue": "history_index_internal_txs_task",
+        "routing_key": "history_index_internal_txs_task"
     },
     "safe_transaction_service.history.tasks.index_safe_events_task": {
-        "queue": "history",
-        "routing_key": "history.index_safe_events_task"
+        "queue": "history_index_safe_events_task",
+        "routing_key": "history_index_safe_events_task"
     },
     "safe_transaction_service.history.tasks.index_erc20_events_task": {
-        "queue": "history",
-        "routing_key": "history.index_erc20_events_task"
+        "queue": "history_index_erc20_events_task",
+        "routing_key": "history_index_erc20_events_task"
     },
     "safe_transaction_service.history.tasks.process_decoded_internal_txs_task": {
-        "queue": "history",
-        "routing_key": "history.process_decoded_internal_txs_task"
+        "queue": "history_process_decoded_internal_txs_task",
+        "routing_key": "history_process_decoded_internal_txs_task"
     },
     "safe_transaction_service.history.tasks.process_decoded_internal_txs_for_safe_task": {
-        "queue": "history",
-        "routing_key": "history.process_decoded_internal_txs_for_safe_task"
+        "queue": "history_process_decoded_internal_txs_for_safe_task",
+        "routing_key": "history_process_decoded_internal_txs_for_safe_task"
     },
     "safe_transaction_service.history.tasks.check_reorgs_task": {
-        "queue": "history",
-        "routing_key": "history.check_reorgs_task"
+        "queue": "history_check_reorgs_task",
+        "routing_key": "history_check_reorgs_task"
     },
     "safe_transaction_service.history.tasks.send_webhook_task": {
-        "queue": "history",
-        "routing_key": "history.send_webhook_task"
+        "queue": "history_send_webhook_task",
+        "routing_key": "history_send_webhook_task"
     },
     "safe_transaction_service.history.tasks.index_contract_metadata": {
-        "queue": "history",
-        "routing_key": "history.index_contract_metadata"
+        "queue": "history_index_contract_metadata",
+        "routing_key": "history_index_contract_metadata"
     },
 
     #
