@@ -58,6 +58,10 @@ build-all:
 	docker images
 
 
+run-quick: stop-all build-all run-all
+
+
+
 ################################################################################################
 
 log-server:
@@ -70,3 +74,8 @@ log-worker:
 stop-old:
 	docker-compose -f ./docker-compose.yml down
 	docker ps
+
+################################################################################################
+
+docker-clean-images:
+	docker rmi  $(docker images -a -q) -f
