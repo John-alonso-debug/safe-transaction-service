@@ -6,7 +6,6 @@ from django.conf import settings
 from django.utils import timezone
 
 from celery import app
-from celery import task
 from celery.utils.log import get_task_logger
 from eth_typing import ChecksumAddress
 

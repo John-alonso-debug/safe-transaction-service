@@ -10,21 +10,24 @@ services:
 
   #################### celery base ##############################
 
+
   # celery beat：
   scheduler: &scheduler
-    container_name: worker
     build:
       context: .
-      dockerfile: docker/web/Dockerfile
+      dockerfile: docker/web/Dockerfile_celery
     env_file:
       - .env
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.production_celery
-    depends_on:
-      - db
-      - redis
-    command: celery -A safe_transaction_service.taskapp beat -S django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO
-    # command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DJANGO_SECRET_KEY=aHdCBMHXuxIxEhfRGFRp7Cp3N9CqEZEEAvwZVlBCazKExkEnzvVs4bYWC8Qqh9lg
+      - SECRET_KEY=aHdCBMHXuxIxEhfRGFRp7Cp3N9CqEZEEAvwZVlBCazKExkEnzvVs4bYWC8Qqh9lg
+      - DATABASE_URL=psql://postgres:postgres@db:5432/postgres
+#    depends_on:
+#      - db
+#      - redis
+    command: celery -A safe_transaction_service.taskapp.celery_app beat -S django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO
+    # command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80
 
 
   #################### celery worker group ##############################
@@ -33,24 +36,24 @@ services:
   celery_worker_default:
     <<: *scheduler
     container_name: celery_worker_default
-    command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q default
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q default
 
   celery_worker_history:
     <<: *scheduler
     container_name: celery_worker_history
-    command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q history
 
   celery_worker_contracts:
     <<: *scheduler
     container_name: celery_worker_contracts
-    command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q contracts
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q contracts
 
   celery_worker_notifications:
     <<: *scheduler
     container_name: celery_worker_notifications
-    command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q notifications
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q notifications
 
   celery_worker_tokens:
     <<: *scheduler
     container_name: celery_worker_tokens
-    command: celery -A safe_transaction_service.taskapp worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q tokens
+    command: celery -A safe_transaction_service.taskapp.celery_app worker --loglevel INFO --pool=gevent --autoscale=120,80 -Q tokens

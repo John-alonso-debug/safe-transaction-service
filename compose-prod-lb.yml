@@ -18,5 +18,5 @@ services:
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-shared:/nginx
-    depends_on:
-      - web
+#    depends_on:
+#      - web

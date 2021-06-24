@@ -5,8 +5,11 @@ Base settings to build other settings files upon.
 import environ
 from corsheaders.defaults import default_headers as default_cors_headers
 
-ROOT_DIR = environ.Path(__file__) - 3  # (safe_transaction_service/config/settings/base.py - 3 = safe-transaction-service/)
+ROOT_DIR = environ.Path(
+    __file__) - 3  # (safe_transaction_service/config/settings/base.py - 3 = safe-transaction-service/)
 APPS_DIR = ROOT_DIR.path('safe_transaction_service')
+
+from safe_transaction_service.taskapp.celery_app import PatchedCeleryFormatter
 
 env = environ.Env()
 
@@ -41,7 +44,7 @@ USE_TZ = True
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'default': env.db('DATABASE_URL'),
+    'default': env.db('DATABASE_URL', 'psql://postgres:postgres@db:5432/postgres'),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = False
 DATABASES['default']['ENGINE'] = 'django_db_geventpool.backends.postgresql_psycopg2'
@@ -189,7 +192,7 @@ MANAGERS = ADMINS
 # Celery
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += [
-    'safe_transaction_service.taskapp.celery.CeleryConfig',
+    'safe_transaction_service.taskapp.celery_app.CeleryConfig',
     'django_celery_beat',
 ]
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
@@ -207,7 +210,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 # We are not interested in keeping results of tasks
 CELERY_IGNORE_RESULT = True
-
 
 #
 # todo x： add celery worker group here
@@ -247,7 +249,7 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         },
         'ignore_succeeded_none': {
-            '()': 'safe_transaction_service.taskapp.celery.IgnoreSucceededNone'
+            '()': 'safe_transaction_service.taskapp.celery_app.IgnoreSucceededNone'
         },
     },
     'formatters': {
@@ -258,7 +260,7 @@ LOGGING = {
             'format': '%(asctime)s [%(levelname)s] [%(processName)s] %(message)s'
         },
         'celery_verbose': {
-            'class': 'safe_transaction_service.taskapp.celery.PatchedCeleryFormatter',
+            'class': 'safe_transaction_service.taskapp.celery_app.PatchedCeleryFormatter',
             'format': '%(asctime)s [%(levelname)s] [%(task_id)s/%(task_name)s] %(message)s',
             # 'format': '%(asctime)s [%(levelname)s] [%(processName)s] [%(task_id)s/%(task_name)s] %(message)s'
         },
@@ -360,10 +362,10 @@ SLACK_API_WEBHOOK = env('SLACK_API_WEBHOOK', default=None)
 NOTIFICATIONS_FIREBASE_CREDENTIALS_PATH = env('NOTIFICATIONS_FIREBASE_CREDENTIALS_PATH', default=None)
 if NOTIFICATIONS_FIREBASE_CREDENTIALS_PATH:
     import json
+
     NOTIFICATIONS_FIREBASE_AUTH_CREDENTIALS = json.load(
         environ.Path(NOTIFICATIONS_FIREBASE_CREDENTIALS_PATH).file('firebase-credentials.json')
     )
-
 
 # AWS S3 https://github.com/etianen/django-s3-storage
 # AWS_QUERYSTRING_AUTH = False  # Remove query parameter authentication from generated URLs
@@ -375,3 +377,12 @@ AWS_S3_FILE_OVERWRITE = True
 AWS_CONFIGURED = bool(AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_S3_BUCKET_NAME)
 
 ETHERSCAN_API_KEY = env('ETHERSCAN_API_KEY', default=None)
+
+#####################################################
+# copy local args:
+#####################################################
+
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='aHdCBMHXuxIxEhfRGFRp7Cp3N9CqEZEEAvwZVlBCazKExkEnzvVs4bYWC8Qqh9lg')
+# DEBUG = env.bool('DJANGO_DEBUG', default=True)
+# INTERNAL_IPS = ['127.0.0.1', '10.0.2.2']
+#

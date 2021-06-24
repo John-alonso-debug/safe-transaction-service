@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import logging
 import os
 
@@ -11,11 +13,6 @@ from celery.app.log import TaskFormatter
 from celery.signals import setup_logging
 from celery.utils.log import ColorFormatter
 
-# task list:
-from safe_transaction_service.tokens.tasks import *
-from safe_transaction_service.notifications.tasks import *
-from safe_transaction_service.history.tasks import *
-from safe_transaction_service.contracts.tasks import *
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +25,15 @@ if not settings.configured:
 
 app = Celery('safe_transaction_service')
 
+# Using a string here means the worker doesn't have to serialize
+# the configuration object to child processes.
+# - namespace='CELERY' means all celery-related configuration keys
+#   should have a `CELERY_` prefix.
+app.config_from_object("django.conf:settings")
+# app.config_from_object("django.conf:settings", namespace="CELERY")
+
+# Load task modules from all registered Django app configs.
+app.autodiscover_tasks()
 
 ##################################################################################
 
@@ -162,7 +168,7 @@ app.conf.task_routes = {
 
 
 class CeleryConfig(AppConfig):
-    name = 'safe_transaction_service.taskapp'
+    name = 'safe_transaction_service.taskapp.celery_app'
     verbose_name = 'Celery Config'
 
     # Use Django logging instead of celery logger
