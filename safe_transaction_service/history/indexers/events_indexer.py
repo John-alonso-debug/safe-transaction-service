@@ -26,7 +26,7 @@ class EventsIndexer(EthereumIndexer):
         #
         # todo x:
         #
-        kwargs['first_block_threshold'] = 8555555  #  todo x : index start adt
+        kwargs['first_block_threshold'] = 8700000  #  todo x : index start adt
         super().__init__(*args, **kwargs)
 
     @property
