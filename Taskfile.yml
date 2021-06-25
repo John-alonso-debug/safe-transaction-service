@@ -1,0 +1,124 @@
+version: '3'
+
+################################################################################################
+#
+# local dev:
+#   - run:
+#   - clean:
+#
+################################################################################################
+
+# global env:
+env:
+  ENV: testing
+
+
+#
+# global vars: https://taskfile.dev/#/usage?id=variables
+#
+vars:
+  DOCKER_CMD_UP: "up -d"
+  DOCKER_CMD_DOWN: "down --remove-orphans"
+  DOCKER_FILE_INFRA: "./compose-prod-infra.yml"
+
+################################################################################################
+
+
+# task groups:
+tasks:
+  default:
+    cmds:
+      - echo "hello from taskfile.yml"
+
+  client:
+    env:
+      GOOS: js
+      GOARCH: wasm
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "build"}
+
+
+  ############################################################################################
+
+  # run all:
+  docker-run:
+    cmds:
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-infra.yml", CMD: "up -d"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-base.yml", CMD: "up -d"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-lb.yml", CMD: "up -d"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-worker.yml", CMD: "up -d"}
+      - docker ps
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-worker.yml", CMD: "logs -f"}
+
+  # stop all:
+  docker-stop:
+    cmds:
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-worker.yml", CMD: "down --remove-orphans"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-lb.yml", CMD: "down --remove-orphans"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-base.yml", CMD: "down --remove-orphans"}
+      - task: docker-cmd
+        vars: {FILENAME: "./compose-prod-infra.yml", CMD: "down --remove-orphans"}
+      - docker ps
+
+  # cmd:
+  docker-cmd:
+    cmds:
+      - docker-compose -f {{.FILENAME}} {{.CMD}}
+
+  ############################################################################################
+
+  # proxy for localhost
+  local-proxy:
+    cmds:
+      - task: local-proxy-cmd
+        vars: {PORT: 8000}
+
+  # cmd:
+  local-proxy-cmd:
+    cmds:
+      - ngrok http {{.PORT}} --log-format json  # logfmt / json
+
+
+  ############################################################################################
+
+  clean:
+    cmds:
+      - task: clean-docker-volumes
+      - task: clean-docker-images
+      - echo "clean all docker images and volumes"
+
+  clean-docker-volumes:
+    cmds:
+      - docker volume rm $(docker volume ls -q)
+
+  clean-docker-images:
+    cmds:
+      - docker rmi  $(docker images -a -q)
+
+  ############################################################################################
+
+
+  # create dir:
+  mkdir:
+    cmds:
+      - mkdir -p {{.FOLDER}}
+
+
+  # install:
+  install-requrements:
+    cmds:
+      - pip3 install -r requirements.txt
+
+  install-tools:
+    cmds:
+      - brew install --cask ngrok
+      - brew install docker-compose

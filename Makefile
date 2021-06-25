@@ -1,4 +1,13 @@
 
+################################################################################################
+
+#
+# ref:
+#	- https://taskfile.dev/#/installation
+#
+install-required:
+	brew install --cask ngrok
+	brew install go-task/tap/go-task
 
 ################################################################################################
 
@@ -79,3 +88,6 @@ stop-old:
 
 docker-clean-images:
 	docker rmi  $(docker images -a -q) -f
+
+task.check:
+	task --dry

@@ -16,6 +16,9 @@ from .models import FirebaseDevice, FirebaseDeviceOwner
 logger = get_task_logger(__name__)
 
 
+#
+# todo x: redis cache: for unique msg
+#
 class DuplicateNotification:
     def __init__(self, address: Optional[str], payload: Dict[str, Any]):
         self.redis = get_redis()
