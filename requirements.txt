@@ -30,3 +30,4 @@ psycopg2-binary==2.8.6
 redis==3.5.3
 requests==2.25.1
 web3==5.19.0
+pyTelegramBotAPI==3.8.0
