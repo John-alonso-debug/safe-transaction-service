@@ -118,7 +118,13 @@ tasks:
     cmds:
       - pip3 install -r requirements.txt
 
+  # init
+  init-project:
+    cmds:
+      - direnv allow .  # env watch
+
   install-tools:
     cmds:
-      - brew install --cask ngrok
+      - brew install --cask ngrok      # localhost proxy tool
       - brew install docker-compose
+      - brew install direnv            # env management tool
